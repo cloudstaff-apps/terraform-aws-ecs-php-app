@@ -89,7 +89,6 @@ variable "hostname_redirects" {
   default     = ""
 }
 
-
 variable "healthcheck_path" {
   default = "/"
 }
