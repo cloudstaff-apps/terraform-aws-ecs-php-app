@@ -2,10 +2,6 @@ variable "name" {
   description = "Name of your ECS service"
 }
 
-variable "php_name" {
-  description = "Name of your ECS service"
-}
-
 variable "container_port" {
   default     = 8080
   description = "Port your container listens (used in the placeholder task definition)"
