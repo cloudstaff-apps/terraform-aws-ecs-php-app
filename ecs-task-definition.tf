@@ -11,7 +11,9 @@ resource "aws_ecs_task_definition" "default" {
   network_mode = var.launch_type == "FARGATE" ? "awsvpc" : var.network_mode
   cpu          = var.launch_type == "FARGATE" ? var.cpu : null
   memory       = var.launch_type == "FARGATE" ? var.memory : null
-
+  sidecar_cpu          = var.launch_type == "FARGATE" ? var.sidecar_cpu : null
+  sidecar_memory       = var.launch_type == "FARGATE" ? var.sidecar_memory : null
+  
   container_definitions = jsonencode([
     {
       name      = var.name
@@ -36,6 +38,29 @@ resource "aws_ecs_task_definition" "default" {
         sourceVolume  = "efs-${keys(var.efs_mapping)[0]}"
         containerPath = values(var.efs_mapping)[0]
       }]
+      secrets     = [for k, v in var.ssm_variables : { name : k, valueFrom : v }]
+      environment = [for k, v in var.static_variables : { name : k, value : v }]
+      ulimits     = var.ulimits
+    },
+     {
+      name      = var.sidecar_name
+      image     = var.sidecar_image
+      cpu       = var.sidecar_cpu
+      memory    = var.sidecar_memory
+      essential = true
+      portMappings = [
+        {
+          containerPort = var.sidecar_container_port
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.default.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "app-sidecar"
+        }
+      }
       secrets     = [for k, v in var.ssm_variables : { name : k, valueFrom : v }]
       environment = [for k, v in var.static_variables : { name : k, value : v }]
       ulimits     = var.ulimits
