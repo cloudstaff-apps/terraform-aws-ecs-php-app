@@ -7,6 +7,11 @@ variable "container_port" {
   description = "Port your container listens (used in the placeholder task definition)"
 }
 
+variable "sidecar_container_port" {
+  default     = 80
+  description = "Port your sidecar container listens (used in the placeholder task definition)"
+}
+
 variable "port" {
   default     = 80
   description = "Port for target group to listen"
@@ -122,6 +127,11 @@ variable "service_deployment_minimum_healthy_percent" {
 
 variable "image" {
   description = "Docker image to deploy (can be a placeholder)"
+  default     = ""
+}
+
+variable "sidecar_image" {
+  description = "Sidecar Docker image to deploy (can be a placeholder)"
   default     = ""
 }
 
