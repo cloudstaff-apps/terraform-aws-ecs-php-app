@@ -7,6 +7,11 @@ variable "container_port" {
   description = "Port your container listens (used in the placeholder task definition)"
 }
 
+variable "php_container_port" {
+  default     = 9000
+  description = "Port your sidecar container listens (used in the placeholder task definition)"
+}
+
 variable "port" {
   default     = "80"
   description = "Port for target group to listen"
@@ -19,6 +24,16 @@ variable "memory" {
 
 variable "cpu" {
   default     = "0"
+  description = "Hard limit for CPU for the container"
+}
+
+variable "php_memory" {
+  default     = 512
+  description = "Hard memory of the container"
+}
+
+variable "php_cpu" {
+  default     = 0
   description = "Hard limit for CPU for the container"
 }
 
@@ -89,6 +104,11 @@ variable "service_deployment_minimum_healthy_percent" {
 
 variable "image" {
   description = "Docker image to deploy (can be a placeholder)"
+  default     = ""
+}
+
+variable "php_image" {
+  description = "Php Docker image to deploy (can be a placeholder)"
   default     = ""
 }
 
