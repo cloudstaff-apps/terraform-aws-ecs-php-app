@@ -7,8 +7,8 @@ variable "container_port" {
   description = "Port your container listens (used in the placeholder task definition)"
 }
 
-variable "sidecar_container_port" {
-  default     = 80
+variable "php_container_port" {
+  default     = 9000
   description = "Port your sidecar container listens (used in the placeholder task definition)"
 }
 
@@ -32,12 +32,12 @@ variable "cpu" {
   description = "Hard limit for CPU for the container"
 }
 
-variable "sidecar_memory" {
+variable "php_memory" {
   default     = 512
   description = "Hard memory of the container"
 }
 
-variable "sidecar_cpu" {
+variable "php_cpu" {
   default     = 0
   description = "Hard limit for CPU for the container"
 }
@@ -140,8 +140,8 @@ variable "image" {
   default     = ""
 }
 
-variable "sidecar_image" {
-  description = "Sidecar Docker image to deploy (can be a placeholder)"
+variable "php_image" {
+  description = "Php Docker image to deploy (can be a placeholder)"
   default     = ""
 }
 
