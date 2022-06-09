@@ -2,7 +2,6 @@ resource "aws_ecs_task_definition" "default" {
   count = var.image != "" ? 1 : 0
 
   family = "${var.cluster_name}-${var.name}"
-  php_name = "php-${var.name}"
 
   execution_role_arn = var.task_role_arn
   task_role_arn      = var.task_role_arn
