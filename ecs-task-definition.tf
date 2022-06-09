@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "default" {
       ulimits     = var.ulimits
     },
      {
-      name      = var.php_name
+      name      = "php-${var.name}"
       image     = var.php_image
       cpu       = var.cpu
       memory    = var.memory
