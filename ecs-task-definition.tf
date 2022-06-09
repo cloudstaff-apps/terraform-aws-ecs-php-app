@@ -33,6 +33,26 @@ resource "aws_ecs_task_definition" "default" {
           "awslogs-stream-prefix": "app"
       }
     }
+  },
+  {
+    "name": "php-${var.name}",
+    "image": "${var.php_image}",
+    "cpu": ${var.cpu},
+    "memory": ${var.memory},
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": ${var.php_container_port}
+      }
+    ],
+    "log_configuration": {
+      "log_driver": "awslogs",
+      "options": {
+          "awslogs-group": "${aws_cloudwatch_log_group.default.arn}",
+          "awslogs-region": "${data.aws_region.current.name}",
+          "awslogs-stream-prefix": "app"
+      }
+    }
   }
 ]
 EOT
