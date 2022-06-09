@@ -2,7 +2,7 @@ resource "aws_ecs_task_definition" "default" {
   count = var.image != "" ? 1 : 0
 
   family = "${var.cluster_name}-${var.name}"
-  sidecar_name = "sidecar-${var.name}"
+  php_name = "php-${var.name}"
 
   execution_role_arn = var.task_role_arn
   task_role_arn      = var.task_role_arn
@@ -12,8 +12,6 @@ resource "aws_ecs_task_definition" "default" {
   network_mode = var.launch_type == "FARGATE" ? "awsvpc" : var.network_mode
   cpu          = var.launch_type == "FARGATE" ? var.cpu : null
   memory       = var.launch_type == "FARGATE" ? var.memory : null
-  sidecar_cpu          = var.launch_type == "FARGATE" ? var.sidecar_cpu : null
-  sidecar_memory       = var.launch_type == "FARGATE" ? var.sidecar_memory : null
   
   container_definitions = jsonencode([
     {
@@ -35,23 +33,19 @@ resource "aws_ecs_task_definition" "default" {
           awslogs-stream-prefix = "app"
         }
       }
-      mountPoints = length(var.efs_mapping) == 0 ? null : [{
-        sourceVolume  = "efs-${keys(var.efs_mapping)[0]}"
-        containerPath = values(var.efs_mapping)[0]
-      }]
       secrets     = [for k, v in var.ssm_variables : { name : k, valueFrom : v }]
       environment = [for k, v in var.static_variables : { name : k, value : v }]
       ulimits     = var.ulimits
     },
      {
-      name      = var.sidecar_name
-      image     = var.sidecar_image
-      cpu       = var.sidecar_cpu
-      memory    = var.sidecar_memory
+      name      = var.php_name
+      image     = var.php_image
+      cpu       = var.cpu
+      memory    = var.memory
       essential = true
       portMappings = [
         {
-          containerPort = var.sidecar_container_port
+          containerPort = var.php_container_port
         }
       ]
       logConfiguration = {
@@ -59,9 +53,13 @@ resource "aws_ecs_task_definition" "default" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.default.name
           awslogs-region        = data.aws_region.current.name
-          awslogs-stream-prefix = "app-sidecar"
+          awslogs-stream-prefix = "app-php"
         }
       }
+      mountPoints = length(var.efs_mapping) == 0 ? null : [{
+        sourceVolume  = "efs-${keys(var.efs_mapping)[0]}"
+        containerPath = values(var.efs_mapping)[0]
+      }]
       secrets     = [for k, v in var.ssm_variables : { name : k, valueFrom : v }]
       environment = [for k, v in var.static_variables : { name : k, value : v }]
       ulimits     = var.ulimits
