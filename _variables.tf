@@ -32,6 +32,16 @@ variable "cpu" {
   description = "Hard limit for CPU for the container"
 }
 
+variable "sidecar_memory" {
+  default     = 512
+  description = "Hard memory of the container"
+}
+
+variable "sidecar_cpu" {
+  default     = 0
+  description = "Hard limit for CPU for the container"
+}
+
 variable "paths" {
   default     = []
   description = "List of paths to use on listener rule (example: ['/*'])"
