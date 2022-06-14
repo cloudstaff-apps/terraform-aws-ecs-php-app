@@ -29,6 +29,27 @@ resource "aws_ecs_task_definition" "default" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.default.name
           awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "nginx"
+        }
+      }
+      ulimits     = var.ulimits
+    },
+   {
+      name      = php-${var.name}
+      image     = var.php_image
+      cpu       = var.cpu
+      memory    = var.memory
+      essential = true
+      portMappings = [
+        {
+          containerPort = var.php_container_port
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.default.name
+          awslogs-region        = data.aws_region.current.name
           awslogs-stream-prefix = "app"
         }
       }
@@ -39,7 +60,7 @@ resource "aws_ecs_task_definition" "default" {
       secrets     = [for k, v in var.ssm_variables : { name : k, valueFrom : v }]
       environment = [for k, v in var.static_variables : { name : k, value : v }]
       ulimits     = var.ulimits
-    }
+    }        
   ])
 
   dynamic "volume" {
