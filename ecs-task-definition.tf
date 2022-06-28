@@ -19,7 +19,7 @@ resource "aws_ecs_task_definition" "default" {
       cpu       = var.cpu
       memory    = var.memory
       essential = true
-      links = ["php-${var.name}:app"]
+      links     = ["php-${var.name}:app"]
       portMappings = [
         {
           containerPort = var.container_port
@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "default" {
           awslogs-stream-prefix = "nginx"
         }
       }
-      ulimits     = var.ulimits
+      ulimits = var.ulimits
     },
     {
       name      = "php-${var.name}"
