@@ -102,6 +102,10 @@ variable "cluster_name" {
   default = "Name of existing ECS Cluster to deploy this app to"
 }
 
+variable "cluster_name_arn" {
+  default = "Arn of existing ECS Cluster to deploy this app to"
+}
+
 variable "service_role_arn" {
   description = "Existing service role ARN created by ECS cluster module"
 }
