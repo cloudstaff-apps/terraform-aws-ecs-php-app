@@ -76,6 +76,7 @@ In addition you have the option to create or not :
 | auth\_oidc\_hostnames | List of hostnames to use as a condition to authenticate with OIDC | `list(string)` | `[]` | no |
 | auth\_oidc\_issuer | Issuer URL for OIDC authentication (Google: https://accounts.google.com) | `string` | `""` | no |
 | auth\_oidc\_paths | List of paths to use as a condition to authenticate (example: ['/admin\*']) | `list(string)` | `[]` | no |
+| auth\_oidc\_scope | Scope for OIDC authentication (Google: profile email openid) | `string` | `"openid"` | no |
 | auth\_oidc\_session\_timeout | Session timeout for OIDC authentication (default 12 hours) | `number` | `43200` | no |
 | auth\_oidc\_token\_endpoint | Token Endpoint URL for OIDC authentication (Google: https://oauth2.googleapis.com/token) | `string` | `""` | no |
 | auth\_oidc\_user\_info\_endpoint | User Info Endpoint URL for OIDC authentication (Google: https://openidconnect.googleapis.com/v1/userinfo) | `string` | `""` | no |
