@@ -456,6 +456,12 @@ variable "auth_oidc_session_timeout" {
   description = "Session timeout for OIDC authentication (default 12 hours)"
 }
 
+variable "auth_oidc_scope" {
+  type        = string
+  default     = "openid"
+  description = "Scope for OIDC authentication (Google: profile email openid)"
+}
+
 variable "ulimits" {
   type = list(object({
     name      = string
