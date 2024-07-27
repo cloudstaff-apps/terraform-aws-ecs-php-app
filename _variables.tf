@@ -543,3 +543,12 @@ variable "task_role_policies" {
   description = "Custom policies to be added on the task role."
 }
 
+variable "autoscaling_alb" {
+  default     = false
+  description = "Enables autoscaling based on ALB request count"
+}
+
+variable "autoscaling_target_alb" {
+  default     = 10
+  description = "Target ALB Request Count Per Target to track for autoscaling"
+}

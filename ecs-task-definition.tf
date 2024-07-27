@@ -41,6 +41,7 @@ resource "aws_ecs_task_definition" "default" {
       cpu       = var.php_cpu
       memory    = var.php_memory
       essential = true
+      command   = var.command
       portMappings = [
         {
           containerPort = var.php_container_port
@@ -85,6 +86,6 @@ resource "aws_ecs_task_definition" "default" {
     replace_triggered_by = [aws_lb_target_group.green]
   }
 
-  tags = merge(var.tags, { "terraform" = "true" }, )
+  tags = var.tags
 
 }

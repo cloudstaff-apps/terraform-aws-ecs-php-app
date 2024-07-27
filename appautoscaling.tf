@@ -1,5 +1,5 @@
 resource "aws_appautoscaling_target" "ecs" {
-  count              = var.autoscaling_cpu || var.autoscaling_memory || length(var.autoscaling_custom) > 0 ? 1 : 0
+  count              = var.autoscaling_cpu || var.autoscaling_memory || var.autoscaling_alb || length(var.autoscaling_custom) > 0 ? 1 : 0
   max_capacity       = var.autoscaling_max
   min_capacity       = var.autoscaling_min
   resource_id        = "service/${var.cluster_name}/${aws_ecs_service.default.name}"
@@ -43,6 +43,27 @@ resource "aws_appautoscaling_policy" "scale_memory" {
 
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+  }
+}
+
+resource "aws_appautoscaling_policy" "scale_alb" {
+  count              = var.autoscaling_alb ? 1 : 0
+  name               = "scale-alb-request-count"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs[0].service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value       = var.autoscaling_target_alb
+    disable_scale_in   = false
+    scale_in_cooldown  = var.autoscaling_scale_in_cooldown
+    scale_out_cooldown = var.autoscaling_scale_out_cooldown
+
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label         = "${split("loadbalancer/", data.aws_lb_listener.ecs.load_balancer_arn)[1]}/${aws_lb_target_group.green.arn_suffix}"
     }
   }
 }
