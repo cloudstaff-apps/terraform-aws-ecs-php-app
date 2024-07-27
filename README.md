@@ -46,19 +46,21 @@ In addition you have the option to create or not :
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13.0 |
+| terraform | >= 0.13 |
+| aws | >= 4.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 4.0.0 |
 | random | n/a |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| alarm\_ecs\_running\_tasks\_threshold | Alarm when the number of ecs service running tasks is lower than a certain value. CloudWatch Container Insights must be enabled for the cluster. | `number` | `0` | no |
 | alarm\_evaluation\_periods | The number of minutes the alarm must be below the threshold before entering the alarm state. | `string` | `"2"` | no |
 | alarm\_high\_cpu\_usage\_above | Alarm when CPU is above a certain value (use 0 to disable this alarm) | `number` | `80` | no |
 | alarm\_min\_healthy\_tasks | Alarm when the number of healthy tasks is less than this number (use 0 to disable this alarm) | `number` | `2` | no |
@@ -88,20 +90,18 @@ In addition you have the option to create or not :
 | autoscaling\_scale\_out\_cooldown | Cooldown in seconds to wait between scale out events | `number` | `300` | no |
 | autoscaling\_target\_cpu | Target average CPU percentage to track for autoscaling | `number` | `50` | no |
 | autoscaling\_target\_memory | Target average Memory percentage to track for autoscaling | `number` | `90` | no |
+| cloudwatch\_logs\_create | Whether to create cloudwatch log resources or not | `bool` | `true` | no |
 | cloudwatch\_logs\_export | Whether to mark the log group to export to an S3 bucket (needs terraform-aws-log-exporter to be deployed in the account/region) | `bool` | `false` | no |
 | cloudwatch\_logs\_retention | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `120` | no |
 | cluster\_name | n/a | `string` | `"Name of existing ECS Cluster to deploy this app to"` | no |
-| codedeploy\_deployment\_config\_name | Specifies the deployment configuration for CodeDeploy | `string` | `"CodeDeployDefault.ECSAllAtOnce"` | no |
-| codedeploy\_role\_arn | Existing IAM CodeDeploy role ARN created by ECS cluster module | `any` | `null` | no |
-| codedeploy\_wait\_time\_for\_cutover | Time in minutes to route the traffic to the new application deployment | `number` | `0` | no |
-| codedeploy\_wait\_time\_for\_termination | Time in minutes to terminate the new deployment | `number` | `0` | no |
+| command | Command to run on container | `list(string)` | `null` | no |
 | compat\_keep\_target\_group\_naming | Keeps old naming convention for target groups to avoid recreation of resource in production environments | `bool` | `false` | no |
 | container\_port | Port your container listens (used in the placeholder task definition) | `number` | `8080` | no |
 | cpu | Hard limit for CPU for the container | `number` | `0` | no |
-| create\_iam\_codedeployrole | Create Codedeploy IAM Role for ECS or not. | `bool` | `true` | no |
-| deployment\_controller | Type of deployment controller. Valid values: CODE\_DEPLOY, ECS, EXTERNAL. | `string` | `"CODE_DEPLOY"` | no |
 | dynamic\_stickiness | Target Group stickiness. Used in dynamic block. | `any` | `[]` | no |
+| ecs\_service\_capacity\_provider\_strategy | (Optional) The capacity provider strategy to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if set to [] and not changing from 0 capacity\_provider\_strategy blocks to greater than 0, or vice versa. | `list` | <pre>[<br>  {}<br>]</pre> | no |
 | efs\_mapping | A map of efs volume ids and paths to mount into the default task definition | `map(string)` | `{}` | no |
+| enable\_schedule | Enables schedule to shut down and start up instances outside business hours. | `bool` | `false` | no |
 | fargate\_spot | Set true to use FARGATE\_SPOT capacity provider by default (only when launch\_type=FARGATE) | `bool` | `false` | no |
 | healthcheck\_interval | n/a | `string` | `"10"` | no |
 | healthcheck\_matcher | The HTTP codes to use when checking for a successful response from a target | `number` | `200` | no |
@@ -131,19 +131,23 @@ In addition you have the option to create or not :
 | port | Port for target group to listen | `number` | `80` | no |
 | protocol | Protocol to use (HTTP or HTTPS) | `string` | `"HTTP"` | no |
 | redirects | Map of path redirects to add to the listener | `map` | `{}` | no |
+| schedule\_cron\_start | Cron expression to define when to trigger a start of the auto-scaling group. E.g. 'cron(00 21 ? \* SUN-THU \*)' to start at 8am UTC time. | `string` | `""` | no |
+| schedule\_cron\_stop | Cron expression to define when to trigger a stop of the auto-scaling group. E.g. 'cron(00 09 ? \* MON-FRI \*)' to start at 8am UTC time | `string` | `""` | no |
 | security\_groups | The security groups associated with the task or service | `any` | `null` | no |
 | service\_deployment\_maximum\_percent | Maximum percentage of tasks to run during deployments | `number` | `200` | no |
 | service\_deployment\_minimum\_healthy\_percent | Minimum healthy percentage during deployments | `number` | `100` | no |
 | service\_desired\_count | Desired count for this service (for use when auto scaling is disabled) | `number` | `1` | no |
 | service\_health\_check\_grace\_period\_seconds | Time until your container starts serving requests | `number` | `0` | no |
-| service\_role\_arn | Existing service role ARN created by ECS cluster module | `any` | n/a | yes |
+| service\_role\_arn | Existing service role ARN created by ECS cluster module | `any` | `null` | no |
 | source\_ips | List of source ip to use on listerner rule | `list` | `[]` | no |
 | ssm\_variables | Map of variables and SSM locations to add to the task definition | `map(string)` | `{}` | no |
 | static\_variables | Map of variables and static values to add to the task definition | `map(string)` | `{}` | no |
 | subnets | The subnets associated with the task or service. (REQUIRED IF 'LAUCH\_TYPE' IS FARGATE) | `any` | `null` | no |
+| tags | Map of tags that will be added to created resources. By default resources will be tagged with terraform=true. | `map(string)` | `{}` | no |
 | task\_definition\_arn | Task definition to use for this service (optional) | `string` | `""` | no |
-| task\_role\_arn | Existing task role ARN created by ECS cluster module | `any` | n/a | yes |
-| test\_traffic\_route\_listener\_arn | ALB HTTPS Listener for Test Traffic created by ECS cluster module | `any` | n/a | yes |
+| task\_role\_arn | Existing task role ARN created by ECS cluster module | `any` | `null` | no |
+| task\_role\_policies | Custom policies to be added on the task role. | `list` | `[]` | no |
+| task\_role\_policies\_managed | AWS Managed policies to be added on the task role. | `list` | `[]` | no |
 | ulimits | Container ulimit settings. This is a list of maps, where each map should contain "name", "hardLimit" and "softLimit" | <pre>list(object({<br>    name      = string<br>    hardLimit = number<br>    softLimit = number<br>  }))</pre> | `null` | no |
 | unhealthy\_threshold | The number of consecutive health check failures required before considering the target unhealthy | `number` | `3` | no |
 | vpc\_id | VPC ID to deploy this app to | `any` | n/a | yes |
