@@ -132,6 +132,7 @@ In addition you have the option to create or not :
 | php\_cpu | Hard limit for CPU for the container | `number` | `0` | no |
 | php\_image | Php Docker image to deploy (can be a placeholder) | `string` | `""` | no |
 | php\_memory | Hard memory of the container | `number` | `512` | no |
+| php\_name | Name of your ECS service | `any` | n/a | yes |
 | placement\_constraints | Rules that are taken into consideration during task placement. Maximum number of placement\_constraints is 10. | <pre>list(object({<br>    type       = string<br>    expression = string<br>  }))</pre> | `[]` | no |
 | platform\_version | The platform version on which to run your service. Only applicable for launch\_type set to FARGATE. Defaults to LATEST. | `string` | `"LATEST"` | no |
 | port | Port for target group to listen | `number` | `80` | no |
