@@ -13,6 +13,7 @@ resource "aws_lb_listener_rule" "green_auth_oidc" {
       token_endpoint         = var.auth_oidc_token_endpoint
       user_info_endpoint     = var.auth_oidc_user_info_endpoint
       session_timeout        = var.auth_oidc_session_timeout
+      scope                  = var.auth_oidc_scope
     }
   }
 

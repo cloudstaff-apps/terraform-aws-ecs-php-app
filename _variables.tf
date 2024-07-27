@@ -16,6 +16,11 @@ variable "php_container_port" {
   description = "Port your sidecar container listens (used in the placeholder task definition)"
 }
 
+variable "php_container_port" {
+  default     = 9000
+  description = "Port your sidecar container listens (used in the placeholder task definition)"
+}
+
 variable "port" {
   default     = 80
   description = "Port for target group to listen"
@@ -32,6 +37,16 @@ variable "memory" {
 }
 
 variable "cpu" {
+  default     = 0
+  description = "Hard limit for CPU for the container"
+}
+
+variable "php_memory" {
+  default     = 512
+  description = "Hard memory of the container"
+}
+
+variable "php_cpu" {
   default     = 0
   description = "Hard limit for CPU for the container"
 }
@@ -103,6 +118,10 @@ variable "healthcheck_interval" {
 
 variable "cluster_name" {
   default = "Name of existing ECS Cluster to deploy this app to"
+}
+
+variable "cluster_name_arn" {
+  default = "Arn of existing ECS Cluster to deploy this app to"
 }
 
 variable "service_role_arn" {
@@ -437,6 +456,12 @@ variable "auth_oidc_session_timeout" {
   type        = number
   default     = 43200
   description = "Session timeout for OIDC authentication (default 12 hours)"
+}
+
+variable "auth_oidc_scope" {
+  type        = string
+  default     = "openid"
+  description = "Scope for OIDC authentication (Google: profile email openid)"
 }
 
 variable "ulimits" {

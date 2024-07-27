@@ -19,7 +19,7 @@ resource "aws_ecs_task_definition" "default" {
       cpu       = var.cpu
       memory    = var.memory
       essential = true
-      command   = var.command
+      links     = ["php-${var.name}:app"]
       portMappings = [
         {
           containerPort = var.container_port
@@ -30,18 +30,16 @@ resource "aws_ecs_task_definition" "default" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.default.name
           awslogs-region        = data.aws_region.current.name
-          awslogs-stream-prefix = "app"
+          awslogs-stream-prefix = "nginx"
         }
       }
-      secrets     = [for k, v in var.ssm_variables : { name : k, valueFrom : v }]
-      environment = [for k, v in var.static_variables : { name : k, value : v }]
-      ulimits     = var.ulimits
+      ulimits = var.ulimits
     },
-     {
-      name      = var.php_name
+    {
+      name      = "php-${var.name}"
       image     = var.php_image
-      cpu       = var.cpu
-      memory    = var.memory
+      cpu       = var.php_cpu
+      memory    = var.php_memory
       essential = true
       portMappings = [
         {
@@ -53,7 +51,7 @@ resource "aws_ecs_task_definition" "default" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.default.name
           awslogs-region        = data.aws_region.current.name
-          awslogs-stream-prefix = "app-php"
+          awslogs-stream-prefix = "php"
         }
       }
       mountPoints = length(var.efs_mapping) == 0 ? null : [{

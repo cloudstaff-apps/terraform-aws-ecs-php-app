@@ -78,6 +78,7 @@ In addition you have the option to create or not :
 | auth\_oidc\_hostnames | List of hostnames to use as a condition to authenticate with OIDC | `list(string)` | `[]` | no |
 | auth\_oidc\_issuer | Issuer URL for OIDC authentication (Google: https://accounts.google.com) | `string` | `""` | no |
 | auth\_oidc\_paths | List of paths to use as a condition to authenticate (example: ['/admin\*']) | `list(string)` | `[]` | no |
+| auth\_oidc\_scope | Scope for OIDC authentication (Google: profile email openid) | `string` | `"openid"` | no |
 | auth\_oidc\_session\_timeout | Session timeout for OIDC authentication (default 12 hours) | `number` | `43200` | no |
 | auth\_oidc\_token\_endpoint | Token Endpoint URL for OIDC authentication (Google: https://oauth2.googleapis.com/token) | `string` | `""` | no |
 | auth\_oidc\_user\_info\_endpoint | User Info Endpoint URL for OIDC authentication (Google: https://openidconnect.googleapis.com/v1/userinfo) | `string` | `""` | no |
@@ -94,6 +95,7 @@ In addition you have the option to create or not :
 | cloudwatch\_logs\_export | Whether to mark the log group to export to an S3 bucket (needs terraform-aws-log-exporter to be deployed in the account/region) | `bool` | `false` | no |
 | cloudwatch\_logs\_retention | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `120` | no |
 | cluster\_name | n/a | `string` | `"Name of existing ECS Cluster to deploy this app to"` | no |
+| cluster\_name\_arn | n/a | `string` | `"Arn of existing ECS Cluster to deploy this app to"` | no |
 | command | Command to run on container | `list(string)` | `null` | no |
 | compat\_keep\_target\_group\_naming | Keeps old naming convention for target groups to avoid recreation of resource in production environments | `bool` | `false` | no |
 | container\_port | Port your container listens (used in the placeholder task definition) | `number` | `8080` | no |
@@ -126,6 +128,10 @@ In addition you have the option to create or not :
 | network\_mode | The Docker networking mode to use for the containers in the task. The valid values are none, bridge, awsvpc, and host. (REQUIRED IF 'LAUCH\_TYPE' IS FARGATE) | `any` | `null` | no |
 | ordered\_placement\_strategy | Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. The maximum number of ordered\_placement\_strategy blocks is 5. | <pre>list(object({<br>    field = string<br>    type  = string<br>  }))</pre> | `[]` | no |
 | paths | List of paths to use on listener rule (example: ['/\*']) | `list(string)` | `[]` | no |
+| php\_container\_port | Port your sidecar container listens (used in the placeholder task definition) | `number` | `9000` | no |
+| php\_cpu | Hard limit for CPU for the container | `number` | `0` | no |
+| php\_image | Php Docker image to deploy (can be a placeholder) | `string` | `""` | no |
+| php\_memory | Hard memory of the container | `number` | `512` | no |
 | placement\_constraints | Rules that are taken into consideration during task placement. Maximum number of placement\_constraints is 10. | <pre>list(object({<br>    type       = string<br>    expression = string<br>  }))</pre> | `[]` | no |
 | platform\_version | The platform version on which to run your service. Only applicable for launch\_type set to FARGATE. Defaults to LATEST. | `string` | `"LATEST"` | no |
 | port | Port for target group to listen | `number` | `80` | no |
