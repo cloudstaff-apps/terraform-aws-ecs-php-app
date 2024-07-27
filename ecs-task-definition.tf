@@ -3,8 +3,8 @@ resource "aws_ecs_task_definition" "default" {
 
   family = "${var.cluster_name}-${var.name}"
 
-  execution_role_arn = var.task_role_arn
-  task_role_arn      = var.task_role_arn
+  execution_role_arn = var.task_role_arn != null ? var.task_role_arn : aws_iam_role.ecs_task[0].arn
+  task_role_arn      = var.task_role_arn != null ? var.task_role_arn : aws_iam_role.ecs_task[0].arn
 
   requires_compatibilities = [var.launch_type]
 
@@ -19,6 +19,7 @@ resource "aws_ecs_task_definition" "default" {
       cpu       = var.cpu
       memory    = var.memory
       essential = true
+      command   = var.command
       portMappings = [
         {
           containerPort = var.container_port
@@ -80,4 +81,12 @@ resource "aws_ecs_task_definition" "default" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes       = [container_definitions]
+    replace_triggered_by = [aws_lb_target_group.green]
+  }
+
+  tags = merge(var.tags, { "terraform" = "true" }, )
+
 }

@@ -9,6 +9,11 @@ resource "aws_ecs_service" "default" {
   deployment_minimum_healthy_percent = var.service_deployment_minimum_healthy_percent
   enable_execute_command             = true
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
   dynamic "network_configuration" {
     for_each = var.launch_type == "FARGATE" ? [var.subnets] : []
     content {
@@ -39,22 +44,24 @@ resource "aws_ecs_service" "default" {
     container_port   = var.container_port
   }
 
-  deployment_controller {
-    type = var.deployment_controller  # default "CODE_DEPLOY"
-  }
+  dynamic "capacity_provider_strategy" {
+    iterator = capacity_provider_strategy
 
-  capacity_provider_strategy {
-    capacity_provider = var.launch_type == "FARGATE" ? (var.fargate_spot ? "FARGATE_SPOT" : "FARGATE") : "${var.cluster_name}-capacity-provider"
-    weight            = 1
-    base              = 0
+    for_each = var.ecs_service_capacity_provider_strategy
+    content {
+      capacity_provider = lookup(capacity_provider_strategy.value, "capacity_provider", var.launch_type == "FARGATE" ? (var.fargate_spot ? "FARGATE_SPOT" : "FARGATE") : "${var.cluster_name}-capacity-provider")
+      weight            = lookup(capacity_provider_strategy.value, "weight", 1)
+      base              = lookup(capacity_provider_strategy.value, "base", 0)
+    }
   }
 
   lifecycle {
-    ignore_changes = [load_balancer, task_definition, desired_count, capacity_provider_strategy]
+    ignore_changes       = [load_balancer, task_definition, desired_count, capacity_provider_strategy]
+    replace_triggered_by = [aws_lb_target_group.green] # This is to ensure that the service is replaced when the target group is replaced
   }
 
-  depends_on = [
-    aws_lb_listener_rule.green,
-    aws_lb_listener_rule.blue
-  ]
+  depends_on = [aws_lb_listener_rule.green]
+
+  tags = merge(var.tags, { "terraform" = "true" }, )
+
 }
