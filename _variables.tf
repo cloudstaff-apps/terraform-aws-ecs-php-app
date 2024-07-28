@@ -2,23 +2,9 @@ variable "name" {
   description = "Name of your ECS service"
 }
 
-variable "php_name" {
-  description = "Name of your ECS service"
-}
-
 variable "container_port" {
   default     = 8080
   description = "Port your container listens (used in the placeholder task definition)"
-}
-
-variable "php_container_port" {
-  default     = 9000
-  description = "Port your sidecar container listens (used in the placeholder task definition)"
-}
-
-variable "php_container_port" {
-  default     = 9000
-  description = "Port your sidecar container listens (used in the placeholder task definition)"
 }
 
 variable "port" {
@@ -37,26 +23,6 @@ variable "memory" {
 }
 
 variable "cpu" {
-  default     = 0
-  description = "Hard limit for CPU for the container"
-}
-
-variable "php_memory" {
-  default     = 512
-  description = "Hard memory of the container"
-}
-
-variable "php_cpu" {
-  default     = 0
-  description = "Hard limit for CPU for the container"
-}
-
-variable "php_memory" {
-  default     = 512
-  description = "Hard memory of the container"
-}
-
-variable "php_cpu" {
   default     = 0
   description = "Hard limit for CPU for the container"
 }
@@ -551,4 +517,19 @@ variable "autoscaling_alb" {
 variable "autoscaling_target_alb" {
   default     = 10
   description = "Target ALB Request Count Per Target to track for autoscaling"
+}
+
+variable "php_cpu" {
+  default     = 0
+  description = "Hard limit for CPU for the container"
+}
+
+variable "php_memory" {
+  default     = 512
+  description = "Hard memory of the container"
+}
+
+variable "php_container_port" {
+  default     = 9000
+  description = "Port your sidecar container listens (used in the placeholder task definition)"
 }
